@@ -13,3 +13,4 @@ results
 test_apps
 *.tmproj
 *.log
+.idea
