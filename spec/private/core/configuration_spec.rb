@@ -1,26 +1,15 @@
 require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
 describe Webrat::Configuration do
-  
-  Spec::Matchers.define :parse_with_nokogiri do
-    match do |config|
-      config.parse_with_nokogiri?
-    end
-  end
-  
+
   Spec::Matchers.define :open_error_files do
     match do |config|
       config.open_error_files?
     end
   end
-  
+
   it "should have a mode" do
     Webrat.configuration.should respond_to(:mode)
-  end
-
-  it "should use Nokogiri as the parser by default" do
-    config = Webrat::Configuration.new
-    config.should parse_with_nokogiri
   end
 
   it "should open error files by default" do
@@ -54,24 +43,6 @@ describe Webrat::Configuration do
     config = Webrat.configuration
     config.should_not open_error_files
     config.selenium_server_port.should == 1234
-  end
-
-  [:rails,
-  :selenium,
-  :rack,
-  :sinatra,
-  :mechanize].each do |mode|
-    it "should require correct lib when in #{mode} mode" do
-      config = Webrat::Configuration.new
-      config.should_receive(:require).with("webrat/#{mode}")
-      config.mode = mode
-    end
-  end
-
-  it "should require merb_session when in merb mode" do
-    config = Webrat::Configuration.new
-    config.should_receive(:require).with("webrat/merb_session")
-    config.mode = :merb
   end
 
   describe "Selenium" do

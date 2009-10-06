@@ -1,5 +1,4 @@
 require "webrat"
-gem "selenium-client", ">=1.2.14"
 require "selenium/client"
 require "webrat/selenium/silence_stream"
 require "webrat/selenium/selenium_session"
@@ -66,16 +65,6 @@ module Webrat
       def save_and_open_screengrab
         webrat_session.save_and_open_screengrab
       end
-    end
-  end
-end
-
-if defined?(ActionController::IntegrationTest)
-  module ActionController #:nodoc:
-    IntegrationTest.class_eval do
-      include Webrat::Methods
-      include Webrat::Selenium::Methods
-      include Webrat::Selenium::Matchers
     end
   end
 end

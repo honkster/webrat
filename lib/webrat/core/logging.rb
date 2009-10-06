@@ -1,3 +1,5 @@
+require "logger"
+
 module Webrat
   module Logging #:nodoc:
 
@@ -11,12 +13,9 @@ module Webrat
       when :rails
         defined?(RAILS_DEFAULT_LOGGER) ? RAILS_DEFAULT_LOGGER : nil
       when :merb
-        Merb.logger
+        ::Merb.logger
       else
-        @logger ||= begin
-          require "logger"
-          ::Logger.new("webrat.log")
-        end
+        @logger ||= ::Logger.new("webrat.log")
       end
     end
 

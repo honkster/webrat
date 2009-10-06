@@ -61,6 +61,10 @@ describe "have_selector" do
         @body.should have_selector("li", :count => 4)
       }.should raise_error(Spec::Expectations::ExpectationNotMetError)
     end
+
+    it "should convert a string to an integer for count" do
+      @body.should have_selector("li", :count => "3")
+    end
   end
 
   describe "specifying nested elements" do
@@ -122,7 +126,7 @@ describe "have_selector" do
       it "should throw an exception when the body doesnt have matching selection" do
         lambda {
           assert_have_selector("p")
-        }.should raise_error(Test::Unit::AssertionFailedError)
+        }.should raise_error(AssertionFailedError)
       end
     end
 
@@ -134,7 +138,7 @@ describe "have_selector" do
       it "should throw an exception when the body does contain the selection" do
         lambda {
           assert_have_no_selector("div")
-        }.should raise_error(Test::Unit::AssertionFailedError)
+        }.should raise_error(AssertionFailedError)
       end
     end
   end

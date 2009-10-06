@@ -1,4 +1,57 @@
-== 0.4.5 / ?
+== 0.6.rc1 / 2009-09-22
+
+REMOVED: Support for Hpricot + REXML as an alternative to Nokogiri.
+
+  Hpricot and REXML were difficult to work with, REXML is terribly slow,
+  and Nokogiri is recommended even by the author of Hpricot (_why). Now
+  that Nokogiri works on JRuby, Webrat is going to use it as its sole
+  XML backend.
+
+CHANGED: Due to a reorganization, if you're currently requiring "webrat/rspec-rails",
+  please change your code to require "webrat/integrations/rspec-rails"
+
+* Minor enhancements
+
+  * When a timeout occurs in wait_for, include the HTML from Selenium in the exception
+  * Update the Merb support to be based directly on Rack (Simon Rozet)
+  * Support multiple select fields (Kieran P)
+  * When locating select options, always match against text, not HTML
+
+* Bug fixes
+
+  * Fix logger issue when running inside Cucumber (Damian Janowski)
+  * Fix various issues related to submitting values with HTML entities (Kieran P)
+  * Call #to_i on the :count option in matchers (Michael Christenson II)
+  * Fix bug where multiline param values were getting truncated
+
+== 0.5.3 / 2009-08-27
+
+* Minor enhancements
+
+  * Remove unnecessary requires which are to the wrong paths on Edge Rails
+
+== 0.5.1 / 2009-08-18
+
+* Minor enhancements
+
+  * Base Webrat::MIME on Rack::Mime (Simon Rozet)
+  * Support file uploads in Rack mode (Simon Rozet)
+
+* Bug fixes
+
+  * Fix bug in Webrat::Methods preventing Selenium mode from working [#277]
+
+== 0.5.0 / 2009-08-12
+
+* Major enhancements
+
+  * Depreacate :rack_test and :sinatra in favor of :rack, which uses Rack::Test (Simon Rozet)
+
+* Minor enhancements
+
+  * Don't require rubygems at runtime (Simon Rozet)
+
+== 0.4.5 / 2009-08-10
 
 * Major enhancements
 
@@ -9,6 +62,8 @@
 
 * Minor enhancements
 
+  * Upgrade to selenium-client to 1.2.16 (Brian Landau)
+  * Upgrade selenium-server.jar to 1.0.1 (Brian Landau)
   * Make redirect detection work in the face of rational maths (like when ruby-units is active) (Piers Cawley)
   * Use Launchy to handle opening pages in the browser with cross-platform compatibility (Bryan Helmkamp)
   * Added support for field_labeled_locators ending in non word characters

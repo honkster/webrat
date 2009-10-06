@@ -1,31 +1,22 @@
-require "rubygems"
-
-$LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__))) unless $LOAD_PATH.include?(File.expand_path(File.dirname(__FILE__)))
+require "rack"
+require "nokogiri"
 
 module Webrat
   # The common base class for all exceptions raised by Webrat.
   class WebratError < StandardError
   end
 
-  VERSION = '0.4.4.2'
+  VERSION = "0.6.rc1"
 
-  def self.require_xml
-    if on_java?
-      gem "nokogiri", ">= 1.2.4"
-    else
-      gem "nokogiri", ">= 1.0.6"
-    end
+  autoload :MechanizeAdapter, "webrat/adapters/mechanize"
+  autoload :MerbAdapter, "webrat/adapters/merb"
+  autoload :RackAdapter, "webrat/adapters/rack"
+  autoload :RailsAdapter, "webrat/adapters/rails"
+  autoload :SinatraAdapter, "webrat/adapters/sinatra"
 
-    require "nokogiri"
-    require "webrat/core/xml/nokogiri"
+  # The common base class for all exceptions raised by Webrat.
+  class WebratError < StandardError
   end
-
-  def self.on_java?
-    RUBY_PLATFORM =~ /java/
-  end
-
 end
-
-Webrat.require_xml
 
 require "webrat/core"

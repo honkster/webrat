@@ -1,89 +1,64 @@
-# require 'rubygems'
-require "rake/gempackagetask"
-require 'rake/rdoctask'
-require "rake/clean"
-gem "rspec", "1.2.6"
-require 'spec'
-require 'spec/rake/spectask'
-require 'spec/rake/verify_rcov'
-require File.expand_path('./lib/webrat.rb')
+require "rubygems"
 
-##############################################################################
-# Package && release
-##############################################################################
-spec = Gem::Specification.new do |s|
-  s.name         = "honkster-webrat"
-  s.version      = Webrat::VERSION
-  s.platform     = Gem::Platform::RUBY
-  s.author       = "Bryan Helmkamp"
-  s.email        = "bryan" + "@" + "brynary.com"
-  s.homepage     = "http://github.com/brynary/webrat"
-  s.summary      = "Webrat. Ruby Acceptance Testing for Web applications"
-  s.bindir       = "bin"
-  s.description  = s.summary
-  s.require_path = "lib"
-  s.files        = %w(History.txt install.rb MIT-LICENSE.txt README.rdoc Rakefile) + Dir["lib/**/*"] + Dir["vendor/**/*"]
-
-  # rdoc
-  s.has_rdoc         = true
-  s.extra_rdoc_files = %w(README.rdoc MIT-LICENSE.txt)
-
-  # Dependencies
-  s.add_dependency "nokogiri", ">= 1.2.0"
-
-  s.rubyforge_project = "webrat"
-end
-
-Rake::GemPackageTask.new(spec) do |package|
-  package.gem_spec = spec
-end
-
-desc 'Show information about the gem.'
-task :debug_gem do
-  puts spec.to_ruby
-end
-
-CLEAN.include ["pkg", "*.gem", "doc", "ri", "coverage"]
-
-desc "Upload rdoc to brynary.com"
-task :publish_rdoc => :docs do
-  sh "scp -r doc/ brynary.com:/apps/uploads/webrat"
-end
-
-desc "Run API and Core specs"
-Spec::Rake::SpecTask.new do |t|
-  t.spec_opts = ['--options', "\"#{File.dirname(__FILE__)}/spec/spec.opts\""]
-  t.spec_files = FileList['spec/public/**/*_spec.rb'] + FileList['spec/private/**/*_spec.rb']
-end
-
-desc "Run all specs in spec directory with RCov"
-Spec::Rake::SpecTask.new(:rcov) do |t|
-  t.spec_opts = ['--options', "\"#{File.dirname(__FILE__)}/spec/spec.opts\""]
-  t.spec_files = FileList['spec/public/**/*_spec.rb'] + FileList['spec/private/**/*_spec.rb']
-  t.rcov = true
-  t.rcov_opts = lambda do
-    IO.readlines(File.dirname(__FILE__) + "/spec/rcov.opts").map {|l| l.chomp.split " "}.flatten
+begin
+  require 'jeweler'
+rescue LoadError
+  desc "Install gem using sudo"
+  task(:install) do
+    $stderr.puts "Jeweler not available. `gem install jeweler` to install this gem"
   end
+else
+  Jeweler::Tasks.new do |s|
+    s.name      = "webrat"
+    s.author    = "Bryan Helmkamp"
+    s.email     = "bryan" + "@" + "brynary.com"
+    s.homepage  = "http://github.com/brynary/webrat"
+    s.summary   = "Ruby Acceptance Testing for Web applications"
+    s.description  = <<-EOS.strip
+Webrat lets you quickly write expressive and robust acceptance tests
+for a Ruby web application. It supports simulating a browser inside
+a Ruby process to avoid the performance hit and browser dependency of
+Selenium or Watir, but the same API can also be used to drive real
+Selenium tests when necessary (eg. for testing AJAX interactions).
+Most Ruby web frameworks and testing frameworks are supported.
+    EOS
+
+    s.rubyforge_project = "webrat"
+    s.extra_rdoc_files = %w[README.rdoc MIT-LICENSE.txt History.txt]
+
+    # Dependencies
+    s.add_dependency "nokogiri", ">= 1.2.0"
+    s.add_dependency "rack", ">= 1.0"
+
+    s.add_development_dependency "rails", ">= 2.3"
+    s.add_development_dependency "merb-core", ">= 1.0"
+    s.add_development_dependency "launchy"
+  end
+
+  Jeweler::RubyforgeTasks.new
 end
 
-RCov::VerifyTask.new(:verify_rcov => :rcov) do |t|
-  t.threshold = 96.2 # Make sure you have rcov 0.7 or higher!
-end
+begin
+  require 'spec/rake/spectask'
+rescue LoadError
+  desc "Run specs"
+  task(:spec) { $stderr.puts '`gem install rspec` to run specs' }
+else
+  desc "Run API and Core specs"
+  Spec::Rake::SpecTask.new do |t|
+    t.spec_opts = ['--options', "\"#{File.dirname(__FILE__)}/spec/spec.opts\""]
+    t.spec_files = FileList['spec/public/**/*_spec.rb'] + FileList['spec/private/**/*_spec.rb']
+  end
 
-desc 'Install the package as a gem.'
-task :install_gem => [:clean, :package] do
-  gem_filename = Dir['pkg/*.gem'].first
-  sh "sudo gem install --no-rdoc --no-ri --local #{gem_filename}"
-end
-
-desc "Delete generated RDoc"
-task :clobber_docs do
-  FileUtils.rm_rf("doc")
-end
-
-desc "Generate RDoc"
-task :docs => :clobber_docs do
-  system "hanna --title 'Webrat #{Webrat::VERSION} API Documentation'"
+  desc "Run all specs in spec directory with RCov"
+  Spec::Rake::SpecTask.new(:rcov) do |t|
+    t.spec_opts = ['--options', "\"#{File.dirname(__FILE__)}/spec/spec.opts\""]
+    t.spec_files = FileList['spec/public/**/*_spec.rb'] + FileList['spec/private/**/*_spec.rb']
+    t.rcov = true
+    t.rcov_opts = lambda do
+      IO.readlines(File.dirname(__FILE__) + "/spec/rcov.opts").map {|l| l.chomp.split " "}.flatten
+    end
+  end
 end
 
 desc "Run everything against multiruby"
@@ -138,18 +113,18 @@ task :spec_deps do
   end
 end
 
-task :prepare do
-  system "ln -s ../../../../.. ./spec/integration/rails/vendor/plugins/webrat"
-end
-
 namespace :spec do
   desc "Run the integration specs"
-  task :integration => ["integration:rails", "integration:merb", "integration:sinatra", "integration:rack"]
+  task :integration => [
+    "integration:rack",
+    "integration:sinatra",
+    "integration:merb",
+    "integration:mechanize",
+    "integration:rails:webrat",
+    "integration:rails:selenium",
+  ]
 
   namespace :integration do
-    desc "Run the Rails integration specs"
-    task :rails => ['rails:webrat'] #,'rails:selenium'] currently not running selenium as it doesn't pass.
-
     namespace :rails do
       task :selenium do
         Dir.chdir "spec/integration/rails" do
@@ -189,12 +164,25 @@ namespace :spec do
         raise "Rack integration tests failed" unless result
       end
     end
+
+    desc "Run the Mechanize integration specs"
+    task :mechanize do
+      Dir.chdir "spec/integration/mechanize" do
+        result = system "rake spec"
+        raise "Mechanize integration tests failed" unless result
+      end
+    end
   end
 end
-
-task :default => :spec
 
 desc 'Removes trailing whitespace'
 task :whitespace do
   sh %{find . -name '*.rb' -exec sed -i '' 's/ *$//g' {} \\;}
 end
+
+if defined?(Jeweler)
+  task :spec => :check_dependencies
+  task :build => :gemspec
+end
+
+task :default => :spec

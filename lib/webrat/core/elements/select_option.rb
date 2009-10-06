@@ -4,12 +4,21 @@ module Webrat
   class SelectOption < Element #:nodoc:
 
     def self.xpath_search
-      ".//option"
+      [".//option"]
     end
 
     def choose
       select.raise_error_if_disabled
       select.set(value)
+    end
+
+    def unchoose
+      select.raise_error_if_disabled
+      select.unset(value)
+    end
+
+    def inner_text
+      @element.inner_text
     end
 
   protected
@@ -28,7 +37,11 @@ module Webrat
     end
 
     def value
-      Webrat::XML.attribute(@element, "value") || Webrat::XML.inner_html(@element)
+      @element["value"] || @element.inner_html
+    end
+
+    def label
+      @element.inner_html
     end
 
   end

@@ -1,26 +1,14 @@
-require "webrat"
-
-require "action_controller"
-require "action_controller/integration"
+require "webrat/integrations/rails"
 require "action_controller/record_identifier"
 
 module Webrat
-  class RailsSession < Session #:nodoc:
+  class RailsAdapter #:nodoc:
     include ActionController::RecordIdentifier
 
-    # The Rails version of within supports passing in a model and Webrat
-    # will apply a scope based on Rails' dom_id for that model.
-    #
-    # Example:
-    #   within User.last do
-    #     click_link "Delete"
-    #   end
-    def within(selector_or_object, &block)
-      if selector_or_object.is_a?(String)
-        super
-      else
-        super('#' + dom_id(selector_or_object), &block)
-      end
+    attr_reader :integration_session
+
+    def initialize(session)
+      @integration_session = session
     end
 
     def doc_root
@@ -61,10 +49,6 @@ module Webrat
 
   protected
 
-    def integration_session
-      @context
-    end
-
     def do_request(http_method, url, data, headers) #:nodoc:
       update_protocol(url)
       integration_session.send(http_method, normalize_url(url), data, headers)
@@ -93,13 +77,5 @@ module Webrat
     def response #:nodoc:
       integration_session.response
     end
-
-  end
-end
-
-module ActionController #:nodoc:
-  IntegrationTest.class_eval do
-    include Webrat::Methods
-    include Webrat::Matchers
   end
 end
