@@ -9,7 +9,7 @@ rescue LoadError
   end
 else
   Jeweler::Tasks.new do |s|
-    s.name      = "webrat"
+    s.name      = "honkster-webrat"
     s.author    = "Bryan Helmkamp"
     s.email     = "bryan" + "@" + "brynary.com"
     s.homepage  = "http://github.com/brynary/webrat"
@@ -23,7 +23,7 @@ Selenium tests when necessary (eg. for testing AJAX interactions).
 Most Ruby web frameworks and testing frameworks are supported.
     EOS
 
-    s.rubyforge_project = "webrat"
+    s.rubyforge_project = "honkster-webrat"
     s.extra_rdoc_files = %w[README.rdoc MIT-LICENSE.txt History.txt]
 
     # Dependencies
