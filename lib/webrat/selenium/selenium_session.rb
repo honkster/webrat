@@ -108,6 +108,10 @@ module Webrat
 
     webrat_deprecate :selects, :select
 
+    def select_frame(selector)
+      remote_control_command("selectFrame", selector)
+    end
+
     def choose(label_text)
       locator = "webrat=#{label_text}"
       selenium.wait_for_element locator, :timeout_in_seconds => 5
