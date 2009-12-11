@@ -2,11 +2,7 @@ require "rack"
 require "nokogiri"
 
 module Webrat
-  # The common base class for all exceptions raised by Webrat.
-  class WebratError < StandardError
-  end
-
-  VERSION = "0.6.rc1"
+  VERSION = "0.6.1.pre"
 
   autoload :MechanizeAdapter, "webrat/adapters/mechanize"
   autoload :MerbAdapter, "webrat/adapters/merb"
