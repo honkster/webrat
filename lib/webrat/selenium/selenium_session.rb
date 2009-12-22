@@ -240,8 +240,9 @@ HTML of the page was:
         Webrat.configuration.selenium_server_address || "localhost",
         Webrat.configuration.selenium_server_port,
         Webrat.configuration.selenium_browser_key,
-        "http://#{Webrat.configuration.application_address}:#{Webrat.configuration.application_port}"),
+        "http://#{Webrat.configuration.application_address}:#{Webrat.configuration.application_port}",
         Webrat.configuration.default_timeout_in_seconds || 10
+      )
       $browser.set_speed(0) unless Webrat.configuration.selenium_server_address
 
       at_exit do
