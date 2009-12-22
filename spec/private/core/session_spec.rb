@@ -23,6 +23,7 @@ describe Webrat::Session do
 
   it "should provide a current_page for backwards compatibility" do
     session = Webrat::Session.new
+    session.stub!(:warn)
     current_page = session.current_page
     current_page.should_not be_nil
     current_page.should respond_to(:url)

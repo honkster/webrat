@@ -59,6 +59,7 @@ describe "save_and_open_page" do
     Launchy::Browser.should_receive(:run).and_raise(LoadError)
 
     lambda do
+      webrat_session.stub!(:warn)
       save_and_open_page
     end.should_not raise_error
   end

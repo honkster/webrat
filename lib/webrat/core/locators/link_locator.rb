@@ -28,7 +28,6 @@ module Webrat
         end
 
         replace_nbsp(link.inner_text) =~ matcher ||
-        replace_nbsp_ref(link.inner_html) =~ matcher ||
         link["title"] =~ matcher
       end
 

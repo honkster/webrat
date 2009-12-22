@@ -382,17 +382,15 @@ describe "click_link" do
   end
 
   it "should not match on non-text contents" do
-    pending "needs fix" do
-      with_html <<-HTML
-        <html>
-        <a href="/page1"><span class="location">My house</span></a>
-        <a href="/page2">Location</a>
-        </html>
-      HTML
+    with_html <<-HTML
+      <html>
+      <a href="/page1"><span class="location">My house</span></a>
+      <a href="/page2">Location</a>
+      </html>
+    HTML
 
-      webrat_session.should_receive(:get).with("/page2", {})
-      click_link "Location"
-    end
+    webrat_session.should_receive(:get).with("/page2", {})
+    click_link "Location"
   end
 
   it "should click link within a selector" do
