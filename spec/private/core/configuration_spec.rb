@@ -22,6 +22,11 @@ describe Webrat::Configuration do
     config.infinite_redirect_limit.should == 10
   end
 
+  it "should timeout after 10 seconds by default" do
+    config = Webrat::Configuration.new
+    config.default_timeout_in_seconds.should == 10
+  end
+
   it "should be configurable with a block" do
     Webrat.configure do |config|
       config.open_error_files = false

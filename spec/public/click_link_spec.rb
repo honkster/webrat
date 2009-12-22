@@ -305,7 +305,7 @@ describe "click_link" do
     end
   end
 
-  it "should fail is the link doesn't exist" do
+  it "should fail if the link doesn't exist" do
     with_html <<-HTML
       <html>
       <a href="/page">Link text</a>
@@ -461,70 +461,100 @@ describe "click_link" do
     click_link "Jump to foo bar"
   end
 
-  it "should matches_text? on regexp" do
-    pending "need to update these"
-    link = Webrat::Link.new(webrat_session, nil)
-    link.should_receive(:text).and_return(@link_text_with_nbsp)
-    link.matches_text?(/link/i).should == 0
+  it "should match on regexp" do
+    with_html <<-HTML
+      <html>
+      <a href="/page">Link Text</a>
+      </html>
+    HTML
+    webrat_session.should_receive(:get).with("/page", {})
+    click_link /link/i
   end
 
-  it "should matches_text? on link_text" do
-    pending "need to update these"
-    link = Webrat::Link.new(webrat_session, nil)
-    link.should_receive(:text).and_return(@link_text_with_nbsp)
-    link.matches_text?("Link Text").should == 0
+  it "should match on link_text" do
+    with_html <<-HTML
+      <html>
+      <a href="/page">Link Text</a>
+      </html>
+    HTML
+    webrat_session.should_receive(:get).with("/page", {})
+    click_link "Link Text"
   end
 
-  it "should matches_text? on substring" do
-    pending "need to update these"
-    link = Webrat::Link.new(webrat_session, nil)
-    link.should_receive(:text).and_return(@link_text_with_nbsp)
-    link.matches_text?("nk Te").should_not be_nil
+  it "should match on substring" do
+    with_html <<-HTML
+      <html>
+      <a href="/page">Link Text</a>
+      </html>
+    HTML
+    webrat_session.should_receive(:get).with("/page", {})
+    click_link "nk Te"
   end
 
-  it "should not matches_text? on link_text case insensitive" do
-    pending "need to update these"
-    link = Webrat::Link.new(webrat_session, nil)
-    link.should_receive(:text).and_return(@link_text_with_nbsp)
-    link.should_receive(:inner_html).and_return('Link&nbsp;Text')
-    link.should_receive(:title).and_return(nil)
-    link.matches_text?("link_text").should == false
+  it "should not match on link_text case insensitive" do
+    with_html <<-HTML
+      <html>
+      <a href="/page">Link&nbsp;Text</a>
+      </html>
+    HTML
+    lambda do
+      click_link "link_text"
+    end.should raise_error(Webrat::NotFoundError)
   end
 
   it "should match text not include &nbsp;" do
-    pending "need to update these"
-    link = Webrat::Link.new(webrat_session, nil)
-    link.should_receive(:text).and_return('LinkText')
-    link.matches_text?("LinkText").should == 0
+    with_html <<-HTML
+      <html>
+      <a href="/page">LinkText</a>
+      </html>
+    HTML
+    webrat_session.should_receive(:get).with("/page", {})
+    click_link "LinkText"
   end
 
-  it "should not matches_text? on wrong text" do
-    pending "need to update these"
-    link = Webrat::Link.new(webrat_session, nil)
-    nbsp = [0xA0].pack("U")
-    link.should_receive(:text).and_return("Some"+nbsp+"Other"+nbsp+"Link")
-    link.should_receive(:inner_html).and_return("Some&nbsp;Other&nbsp;Link")
-    link.should_receive(:title).and_return(nil)
-    link.matches_text?("Link Text").should == false
+  it "should not match on wrong text" do
+    with_html <<-HTML
+      <html>
+      <a href="/page">Some&nbsp;Other&nbsp;Link</a>
+      </html>
+    HTML
+    lambda do
+      click_link "Link Text"
+    end.should raise_error(Webrat::NotFoundError)
   end
 
   it "should match text including character reference" do
-    pending "need to update these"
-    no_ko_gi_ri = [0x30CE,0x30B3,0x30AE,0x30EA]
+    no_ko_gi_ri = [0x30CE, 0x30B3, 0x30AE, 0x30EA]
     nokogiri_ja_kana = no_ko_gi_ri.pack("U*")
     nokogiri_char_ref = no_ko_gi_ri.map{|c| "&#x%X;" % c }.join("")
 
-    link = Webrat::Link.new(webrat_session, nil)
-    link.should_receive(:text).and_return(nokogiri_ja_kana)
-    link.matches_text?(nokogiri_ja_kana).should == 0
+    with_html <<-HTML
+      <html>
+      <a href="/page">#{nokogiri_char_ref}</a>
+      </html>
+    HTML
+    webrat_session.should_receive(:get).with("/page", {})
+    click_link nokogiri_ja_kana
   end
 
-  it "should match img link" do
-    pending "need to update these"
-    link = Webrat::Link.new(webrat_session, nil)
-    link.should_receive(:text).and_return('')
-    link.should_receive(:inner_html).and_return('<img src="logo.png" />')
-    link.matches_text?('logo.png').should == 10
+  it "should match img link by src" do
+    with_html <<-HTML
+      <html>
+      <a href="/page"><img src="logo.png" /></a>
+      </html>
+    HTML
+    webrat_session.should_receive(:get).with("/page", {})
+    click_link "logo.png"
+  end
+
+  it "should match img link by title" do
+    with_html <<-HTML
+      <html>
+      <a href="/foo"><img src="foo.jpg" title="My image" /></a>
+      </html>
+    HTML
+    webrat_session.should_receive(:get).with("/foo", {})
+    click_link "My image"
   end
 
 end

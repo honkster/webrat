@@ -16,7 +16,21 @@ module Webrat
       def matching_links
         @matching_links ||= link_elements.select do |link_element|
           matches_text?(link_element) ||
-          matches_id?(link_element)
+          matches_id?(link_element) ||
+          matches_img?(link_element)
+        end
+      end
+
+      def matches_img?(link)
+        if @value.is_a?(Regexp)
+          matcher = @value
+        else
+          matcher = /#{Regexp.escape(@value.to_s)}/i
+        end
+
+        link.css("img").any? do |img|
+          img["title"] =~ matcher ||
+          img["src"] =~ matcher
         end
       end
 

@@ -10,7 +10,7 @@ describe Webrat::SeleniumSession do
     @selenium = Webrat::SeleniumSession.new()
   end
 
-  it "should throw timeout instead of spec expectionnotmet error" do
+  it "should throw TimeoutError instead of Spec::Expectations::ExpectationNotMetError" do
     lambda {
       @selenium.wait_for(:timeout => 0.0001) do
         raise ::Spec::Expectations::ExpectationNotMetError
@@ -18,7 +18,7 @@ describe Webrat::SeleniumSession do
     }.should raise_error(Webrat::TimeoutError)
   end
 
-  it "should throw timeout instead of selenium command error" do
+  it "should throw TimeoutError instead of Selenium::CommandError" do
     lambda {
       @selenium.wait_for(:timeout => 0.0001) do
         raise ::Selenium::CommandError
@@ -26,7 +26,7 @@ describe Webrat::SeleniumSession do
     }.should raise_error(Webrat::TimeoutError)
   end
 
-  it "should throw timeout instead of webrat error" do
+  it "should throw TimeoutError instead of WebratError" do
     lambda {
       @selenium.wait_for(:timeout => 0.0001) do
         raise Webrat::WebratError.new

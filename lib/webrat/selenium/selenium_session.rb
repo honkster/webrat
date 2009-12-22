@@ -132,6 +132,7 @@ module Webrat
       selenium.wait_for_element locator, :timeout_in_seconds => 5
       selenium.click locator
     end
+
     alias_method :uncheck, :check
 
     webrat_deprecate :checks, :check
@@ -182,7 +183,7 @@ module Webrat
 HTML of the page was:
 
 #{selenium.get_html_source}"
-EOS
+        EOS
       end
 
       raise Webrat::TimeoutError.new(error_message)
@@ -235,8 +236,12 @@ EOS
 
 
     def create_browser
-      $browser = ::Selenium::Client::Driver.new(Webrat.configuration.selenium_server_address || "localhost",
-      Webrat.configuration.selenium_server_port, Webrat.configuration.selenium_browser_key, "http://#{Webrat.configuration.application_address}:#{Webrat.configuration.application_port}")
+      $browser = ::Selenium::Client::Driver.new(
+        Webrat.configuration.selenium_server_address || "localhost",
+        Webrat.configuration.selenium_server_port,
+        Webrat.configuration.selenium_browser_key,
+        "http://#{Webrat.configuration.application_address}:#{Webrat.configuration.application_port}"),
+        Webrat.configuration.default_timeout_in_seconds || 10
       $browser.set_speed(0) unless Webrat.configuration.selenium_server_address
 
       at_exit do

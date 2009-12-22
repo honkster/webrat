@@ -58,6 +58,9 @@ module Webrat
     # loop? Defaults to 10
     attr_accessor :infinite_redirect_limit
 
+    # How long to wait for Selenium actions unless overridden.  Defaults to 10 seconds.
+    attr_accessor :default_timeout_in_seconds
+
     def initialize # :nodoc:
       self.open_error_files = true
       self.application_environment = :test
@@ -66,6 +69,7 @@ module Webrat
       self.application_framework = :rails
       self.selenium_server_port = 4444
       self.infinite_redirect_limit = 10
+      self.default_timeout_in_seconds = 10
       self.selenium_browser_key = '*firefox'
       self.selenium_browser_startup_timeout = 5
     end

@@ -5,7 +5,7 @@ module GemHelpers
     require "webrat"
 
     Gem::Specification.new do |s|
-      s.name      = "webrat"
+      s.name      = "honkster-webrat"
       s.version   = Webrat::VERSION
       s.author    = "Bryan Helmkamp"
       s.email     = "bryan@brynary.com"
@@ -52,7 +52,7 @@ Most Ruby web frameworks and testing frameworks are supported.
   end
 
   def read_gemspec
-    @read_gemspec ||= eval(File.read("webrat.gemspec"))
+    @read_gemspec ||= eval(File.read("honkster-webrat.gemspec"))
   end
 
   def sh(command)
@@ -64,9 +64,9 @@ end
 class Default < Thor
   include GemHelpers
 
-  desc "gemspec", "Regenerate webrat.gemspec"
+  desc "gemspec", "Regenerate honkster-webrat.gemspec"
   def gemspec
-    File.open("webrat.gemspec", "w") do |file|
+    File.open("honkster-webrat.gemspec", "w") do |file|
       gemspec_ruby = generate_gemspec.to_ruby
       gemspec_ruby = prettyify_array(gemspec_ruby, :files)
       gemspec_ruby = prettyify_array(gemspec_ruby, :test_files)
@@ -75,13 +75,13 @@ class Default < Thor
       file.write gemspec_ruby
     end
 
-    puts "Wrote gemspec to webrat.gemspec"
+    puts "Wrote gemspec to honkster-webrat.gemspec"
     read_gemspec.validate
   end
 
   desc "build", "Build a webrat gem"
   def build
-    sh "gem build webrat.gemspec"
+    sh "gem build honkster-webrat.gemspec"
     FileUtils.mkdir_p "pkg"
     FileUtils.mv read_gemspec.file_name, "pkg"
   end
