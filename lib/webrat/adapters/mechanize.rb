@@ -4,6 +4,8 @@ module Webrat #:nodoc:
   class MechanizeAdapter #:nodoc:
     extend Forwardable
 
+    Mechanize = WWW::Mechanize if defined?(WWW::Mechanize)
+
     attr_accessor :response
     alias :page :response
 
@@ -20,13 +22,19 @@ module Webrat #:nodoc:
 
     def post(url, data, headers_argument_not_used = nil)
       post_data = data.inject({}) do |memo, param|
-        case param.last
+        case param
         when Hash
-          param.last.each {|attribute, value| memo["#{param.first}[#{attribute}]"] = value }
-        else
-          memo[param.first] = param.last
+          param.each {|attribute, value| memo[attribute] = value }
+          memo
+        when Array
+          case param.last
+          when Hash
+            param.last.each {|attribute, value| memo["#{param.first}[#{attribute}]"] = value }
+          else
+            memo[param.first] = param.last
+          end
+          memo
         end
-        memo
       end
       @response = mechanize.post(url, post_data)
     end
@@ -39,8 +47,16 @@ module Webrat #:nodoc:
       @response.code.to_i
     end
 
+    def response_headers
+      @response.header
+    end
+
     def mechanize
-      @mechanize ||= WWW::Mechanize.new
+      @mechanize ||= begin
+        mechanize = Mechanize.new
+        mechanize.redirect_ok = false
+        mechanize
+      end
     end
 
     def_delegators :mechanize, :basic_auth

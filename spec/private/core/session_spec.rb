@@ -2,11 +2,6 @@ require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
 describe Webrat::Session do
 
-  it "should not have a doc_root" do
-    session = Webrat::Session.new
-    session.doc_root.should be_nil
-  end
-
   it "should expose the current_dom" do
     session = Webrat::Session.new
 
@@ -112,24 +107,6 @@ describe Webrat::Session do
       webrat_session = Webrat::Session.new
     end
 
-    it "should return true if the last response was a redirect and Fixnum#/ returns a Rational" do
-      # This happens if the ruby-units gem has been required
-      Fixnum.class_eval do
-        alias_method :original_divide, "/".to_sym
-
-        def /(other)
-          Rational(self, other)
-        end
-      end
-
-      webrat_session.stub!(:response_code => 301)
-      webrat_session.redirect?.should be_true
-
-      Fixnum.class_eval do
-        alias_method "/".to_sym, :original_divide
-      end
-    end
-
     it "should return true if the last response was a redirect" do
       webrat_session.stub!(:response_code => 301)
       webrat_session.redirect?.should be_true
@@ -137,6 +114,11 @@ describe Webrat::Session do
 
     it "should return false if the last response wasn't a redirect" do
       webrat_session.stub!(:response_code => 200)
+      webrat_session.redirect?.should be_false
+    end
+
+    it "should return false if the last response was a 304 Not Modified" do
+      webrat_session.stub!(:response_code => 304)
       webrat_session.redirect?.should be_false
     end
   end

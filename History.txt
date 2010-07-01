@@ -1,3 +1,37 @@
+== 0.7.1 / 2010-04-26
+
+* Minor enhancements
+
+  * Move verbose selenium output that can clutter build output behind setting
+  * Added application_port_for_selenium to webrat configuration. The use case is when you want to test through a web server sitting in front of your application server. (Luke Melia)
+  * New webrat configuration option selenium_firefox_profile which is passed to selenium server
+  * Allow submit_form to select by CSS too (Damian Janowski)
+
+* Bug fixes
+
+  * Fix that current_url wasn't reflecting redirects in Mechanize [#332] (Emrys Ingersoll)
+  * Fix attach_file with nested params [#341] (Álvaro Gil)
+  * Fix that a 304 was considered a redirect (Larry Marburger)
+  * Fix selection of LABEL elements in Selenium mode under IE [#317] (Damian Janowski, Noah Davis)
+  * Fix have_xpath not matching negative expectation in the block [#182] (Luismi Cavallé)
+
+== 0.7.0 / 2010-01-17
+
+* Major enhancements
+
+  * Upgrade bundled Selenium server JAR to 2.0a1 (Henry Poydar and Jake Scruggs)
+
+* Minor enhancements
+
+  * Save and open page directory specified via configuration, defaults to tmp dir otherwise current dir (Noah Davis)
+
+* Bug fixes
+
+  * Added missing dependency "rack-test" to gemspec (LH #339) (Noah Davis)
+  * Removed save_and_open_page's rewriting of static asset paths before saving (was not actually working) (Noah Davis)
+  * Make "should contain" ignore extra whitespace when doing string comparisons (Noah Davis)
+  * Make selenium matchers handle negative match more consistently with positive match (Luke Melia)
+   
 == 0.6.0 / 2009-11-28
 
 REMOVED: Support for Hpricot + REXML as an alternative to Nokogiri.

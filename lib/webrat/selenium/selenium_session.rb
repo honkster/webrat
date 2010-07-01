@@ -3,7 +3,12 @@ require "webrat/selenium/selenium_rc_server"
 require "webrat/selenium/application_server_factory"
 require "webrat/selenium/application_servers/base"
 
-require "selenium"
+begin
+  require "selenium"
+rescue LoadError => e
+  e.message << " (You may need to install the selenium-rc gem)"
+  raise e
+end
 
 module Webrat
   class TimeoutError < WebratError
@@ -175,8 +180,8 @@ module Webrat
       end
 
       error_message = "#{message} (after #{timeout} sec)"
-
-      if $browser
+      
+      if $browser && Webrat.configuration.selenium_verbose_output
         error_message += <<-EOS
 
 
@@ -200,9 +205,9 @@ HTML of the page was:
 
 
     def save_and_open_screengrab
-      return unless File.exist?(saved_page_dir)
+      return unless File.exist?(Webrat.configuration.saved_pages_dir)
 
-      filename = "#{saved_page_dir}/webrat-#{Time.now.to_i}.png"
+      filename = "#{Webrat.configuration.saved_pages_dir}/webrat-#{Time.now.to_i}.png"
 
       if $browser.chrome_backend?
         $browser.capture_entire_page_screenshot(filename, '')
@@ -236,13 +241,8 @@ HTML of the page was:
 
 
     def create_browser
-      $browser = ::Selenium::Client::Driver.new(
-        Webrat.configuration.selenium_server_address || "localhost",
-        Webrat.configuration.selenium_server_port,
-        Webrat.configuration.selenium_browser_key,
-        "http://#{Webrat.configuration.application_address}:#{Webrat.configuration.application_port}",
-        Webrat.configuration.default_timeout_in_seconds || 10
-      )
+      $browser = ::Selenium::Client::Driver.new(Webrat.configuration.selenium_server_address || "localhost",
+      Webrat.configuration.selenium_server_port, Webrat.configuration.selenium_browser_key, "http://#{Webrat.configuration.application_address}:#{Webrat.configuration.application_port_for_selenium}")
       $browser.set_speed(0) unless Webrat.configuration.selenium_server_address
 
       at_exit do

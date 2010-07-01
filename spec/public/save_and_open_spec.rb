@@ -22,30 +22,13 @@ describe "save_and_open_page" do
     Launchy::Browser.stub!(:run)
 
     @file_handle = mock("file handle")
-    File.stub!(:open).with(filename, 'w').and_yield(@file_handle)
+    File.stub!(:open).and_yield(@file_handle)
     @file_handle.stub!(:write)
   end
 
-  it "should rewrite css rules" do
-    @file_handle.should_receive(:write) do |html|
-      html.should =~ %r|"#{webrat_session.doc_root}/stylesheets/foo.css"|s
-    end
-
-    save_and_open_page
-  end
-
-  it "should rewrite image paths with double quotes" do
-    @file_handle.should_receive(:write) do |html|
-      html.should =~ %r|"#{webrat_session.doc_root}/images/bar.png"|s
-    end
-
-    save_and_open_page
-  end
-
-  it "should rewrite image paths with single quotes" do
-    @file_handle.should_receive(:write) do |html|
-      html.should =~ %r|'#{webrat_session.doc_root}/images/foo.png'|s
-    end
+  it "should save pages to the directory configured" do
+    Webrat.configuration.stub!(:saved_pages_dir => "path/to/dir")
+    File.should_receive(:open).with("path/to/dir/webrat-1234.html", "w").and_yield(@file_handle)
 
     save_and_open_page
   end
@@ -62,10 +45,6 @@ describe "save_and_open_page" do
       webrat_session.stub!(:warn)
       save_and_open_page
     end.should_not raise_error
-  end
-
-  def filename
-    File.expand_path("./webrat-#{Time.now}.html")
   end
 
 end

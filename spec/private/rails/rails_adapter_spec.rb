@@ -76,11 +76,4 @@ describe Webrat::RailsAdapter do
     end
   end
 
-  it "should provide a saved_page_dir" do
-    Webrat::RailsAdapter.new(mock("integration session")).should respond_to(:saved_page_dir)
-  end
-
-  it "should provide a doc_root" do
-    Webrat::RailsAdapter.new(mock("integration session")).should respond_to(:doc_root)
-  end
 end

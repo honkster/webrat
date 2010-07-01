@@ -10,16 +10,12 @@ module Webrat #:nodoc:
     def initialize(*args)
     end
 
-    def doc_root
-      File.expand_path(File.join(".", "public"))
-    end
-
     def response
       @response ||= Object.new
     end
 
     def response_code
-      @response_code || 200
+      @response_code ||= 200
     end
 
     def get(url, data, headers = nil)

@@ -65,7 +65,7 @@ For example:
     attr_reader :current_url
     attr_reader :elements
 
-    def_delegators :@adapter, :response, :response_code, :response_body,
+    def_delegators :@adapter, :response, :response_code, :response_body, :response_headers,
       :response_body=, :response_code=,
       :get, :post, :put, :delete
 
@@ -75,6 +75,7 @@ For example:
       @data            = {}
       @default_headers = {}
       @custom_headers  = {}
+      @current_url     = nil
       reset
     end
 
@@ -90,10 +91,6 @@ For example:
       page.http_method = @http_method
       page.data = @data
       page
-    end
-
-    def doc_root #:nodoc:
-      nil
     end
 
     def header(key, value)
@@ -159,7 +156,7 @@ For example:
     end
 
     def redirect? #:nodoc:
-      (response_code / 100).to_i == 3
+      [301, 302, 303, 307].include?(response_code)
     end
 
     def internal_redirect?
@@ -286,7 +283,7 @@ For example:
     end
 
     def response_location
-      response.headers["Location"]
+      response_headers['Location']
     end
 
     def current_host

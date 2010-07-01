@@ -11,14 +11,6 @@ module Webrat
       @integration_session = session
     end
 
-    def doc_root
-      File.expand_path(File.join(RAILS_ROOT, 'public'))
-    end
-
-    def saved_page_dir
-      File.expand_path(File.join(RAILS_ROOT, "tmp"))
-    end
-
     def get(url, data, headers = nil)
       do_request(:get, url, data, headers)
     end
@@ -41,6 +33,10 @@ module Webrat
 
     def response_code
       response.code.to_i
+    end
+
+    def response_headers
+      response.headers
     end
 
     def xml_content_type?

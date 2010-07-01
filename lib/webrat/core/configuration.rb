@@ -1,4 +1,5 @@
 require "webrat/core_extensions/deprecate"
+require "pathname"
 
 module Webrat
 
@@ -26,7 +27,10 @@ module Webrat
     # Save and open pages with error status codes (500-599) in a browser? Defualts to true.
     attr_writer :open_error_files
 
-    # Which rails environment should the selenium tests be run in? Defaults to selenium.
+    # Save and open page storage directory, defaults to "tmp" under current directory if exists, otherwise current directory
+    attr_accessor :saved_pages_dir
+
+    # Which rails environment should the selenium tests be run in? Defaults to test.
     attr_accessor :application_environment
     webrat_deprecate :selenium_environment, :application_environment
     webrat_deprecate :selenium_environment=, :application_environment=
@@ -35,6 +39,13 @@ module Webrat
     attr_accessor :application_port
     webrat_deprecate :selenium_port, :application_port
     webrat_deprecate :selenium_port=, :application_port=
+
+    # Which port should selenium use to access the application. Defaults to application_port
+    attr_writer :application_port_for_selenium
+    
+    def application_port_for_selenium
+      @application_port_for_selenium || self.application_port
+    end
 
     # Which underlying app framework we're testing with selenium
     attr_accessor :application_framework
@@ -54,12 +65,16 @@ module Webrat
     # Set the timeout for waiting for the browser process to start
     attr_accessor :selenium_browser_startup_timeout
 
+    # Set the firefox profile for selenium to use
+    attr_accessor :selenium_firefox_profile
+
     # How many redirects to the same URL should be halted as an infinite redirect
     # loop? Defaults to 10
     attr_accessor :infinite_redirect_limit
 
-    # How long to wait for Selenium actions unless overridden.  Defaults to 10 seconds.
-    attr_accessor :default_timeout_in_seconds
+    # Print out the full HTML on wait failure
+    # Defaults to false
+    attr_accessor :selenium_verbose_output
 
     def initialize # :nodoc:
       self.open_error_files = true
@@ -72,8 +87,12 @@ module Webrat
       self.default_timeout_in_seconds = 10
       self.selenium_browser_key = '*firefox'
       self.selenium_browser_startup_timeout = 5
-    end
+      self.selenium_verbose_output = false
 
+      tmp_dir = Pathname.new(Dir.pwd).join("tmp")
+      self.saved_pages_dir = tmp_dir.exist? ? tmp_dir : Dir.pwd
+    end
+    
     def open_error_files? #:nodoc:
       @open_error_files ? true : false
     end
