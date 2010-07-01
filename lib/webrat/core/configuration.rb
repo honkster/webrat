@@ -84,7 +84,6 @@ module Webrat
       self.application_framework = :rails
       self.selenium_server_port = 4444
       self.infinite_redirect_limit = 10
-      self.default_timeout_in_seconds = 10
       self.selenium_browser_key = '*firefox'
       self.selenium_browser_startup_timeout = 5
       self.selenium_verbose_output = false
